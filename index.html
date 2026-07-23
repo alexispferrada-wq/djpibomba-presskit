@@ -129,8 +129,7 @@
     <!-- Frente: Avatar gigante -->
     <div class="face front">
       <div class="front-content">
-        <img src="./logo.png" alt="DJ PIBOMBA" style="width:280px; max-width:80%; filter:drop-shadow(0 0 15px #ff007f); margin-bottom:10px;">
-        <h1 style="font-family:'Permanent Marker', cursive; margin:0; color:#ffaa00; text-shadow:2px 2px 0px #ff007f; font-size:1.5rem; letter-spacing:3px;">SCROLL PARA DESCUBRIR</h1>
+        <h1 style="font-family:'Permanent Marker', cursive; margin:0; color:#ffaa00; text-shadow:2px 2px 0px #ff007f; font-size:1.5rem; letter-spacing:3px; padding-top:40px;">SCROLL PARA DESCUBRIR</h1>
         <div class="scroll-indicator">▼ ▼ ▼</div>
       </div>
     </div>
@@ -201,10 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateHeights = () => {
     const windowH = window.innerHeight;
     flipAmount = windowH * 1.2; // Hacemos el giro un poco más rápido
-    const contentH = backScroller.getBoundingClientRect().height;
+    const contentH = backScroller.scrollHeight; // Usar scrollHeight para medir todo el contenido
     const visibleBackH = windowH * 0.88; 
     
-    const extraScroll = Math.max(0, contentH - visibleBackH + 80); 
+    // Añadimos 400px extra de respiro para que nunca quede corto
+    const extraScroll = Math.max(0, contentH - visibleBackH + 400); 
     document.body.style.height = (flipAmount + extraScroll) + 'px';
     maxExtra = extraScroll;
   };
