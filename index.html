@@ -3,194 +3,220 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<title>DJ PIBOMBA | Presskit Profesional</title>
+
+<link rel="icon" href="./logo.png" type="image/png">
+<link rel="apple-touch-icon" href="./logo.png">
+
+<meta property="og:title" content="DJ PIBOMBA PRESSKIT">
+<meta property="og:description" content="Reggaeton, Dancehall, Dembow y Guaracha">
+<meta property="og:image" content="https://djpibomba.tusitioya.cl/caricature.jpg">
+<meta property="og:url" content="https://djpibomba.tusitioya.cl/">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@300;500;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  html, body { margin:0; padding:0; background:#050000; color:#fff; font-family:'Montserrat', sans-serif; overflow-x:hidden; }
+  
+  a { color:#ffb300; transition:all 0.3s; text-decoration:none; } 
+  a:hover { color:#fff; text-shadow:0 0 15px #ff3300; }
+
+  .scene {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    perspective: 1800px; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+
+  .card {
+    width: 94vw; max-width: 950px; height: 88vh;
+    position: relative; transform-style: preserve-3d; will-change: transform;
+  }
+
+  .face {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 15px; box-shadow: 0 30px 80px rgba(255,51,0,0.5);
+    pointer-events: auto; overflow: hidden;
+  }
+
+  /* FRENTE */
+  .front {
+    background: url('./caricature.jpg') center top/cover no-repeat;
+    display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+    border: 3px solid #ff3300;
+  }
+  
+  .front::after {
+    content:""; position:absolute; bottom:0; left:0; width:100%; height:60%;
+    background: linear-gradient(to top, rgba(5,0,0,1) 0%, transparent 100%); z-index:1; pointer-events:none;
+  }
+
+  .front-content { position:relative; z-index:2; text-align:center; padding-bottom:50px; width:100%; }
+
+  .scroll-indicator { margin-top: 25px; animation: bounce 2s infinite; font-size: 1.5rem; color: #ffb300; letter-spacing: 3px; font-family:'Anton', sans-serif;}
+  @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(15px);} }
+
+  /* ESPALDA - CURRÍCULUM */
+  .back {
+    transform: rotateY(180deg);
+    background: rgba(10, 5, 5, 0.92);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 3px solid #ffb300;
+    display: flex; flex-direction: column;
+  }
+
+  #back-scroller { width: 100%; padding: 50px 40px; box-sizing: border-box; will-change: transform; }
+
+  /* Tipografías Urbanas/Festival */
+  .title-urban { font-family:'Anton', sans-serif; color:#ffb300; text-transform:uppercase; letter-spacing:1px; margin:0 0 10px 0; font-size:3.5rem; text-shadow: 3px 3px 0px #ff3300;}
+  .subtitle { font-family:'Anton', sans-serif; color:#fff; font-size:1.8rem; margin:0 0 20px 0; letter-spacing:1px; text-transform:uppercase;}
+  .text-urban { font-size:1.15rem; line-height:1.6; color:#ccc; font-weight:300; margin-bottom:15px;}
+  .highlight { color: #ffb300; font-weight: 800; }
+
+  /* Timeline */
+  .timeline { border-left: 4px solid #ff3300; padding-left: 25px; margin: 30px 0 40px 10px; }
+  .timeline-item { margin-bottom: 30px; position:relative; }
+  .timeline-item::before { 
+    content:""; position:absolute; left:-36.5px; top:5px; width:15px; height:15px; 
+    background:#ffb300; border-radius:50%; box-shadow:0 0 10px #ff3300; border:2px solid #000;
+  }
+  .timeline-date { color:#ff3300; font-family:'Anton', sans-serif; font-size:1.4rem; letter-spacing:1px; margin:0; }
+  .timeline-title { color:#fff; font-size:1.4rem; font-weight:800; margin:5px 0; text-transform:uppercase;}
+
+  .tags { display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;}
+  .tag { background:rgba(255,51,0,0.2); border:1px solid #ff3300; color:#fff; padding:5px 15px; border-radius:20px; font-size:0.9rem; font-weight:700;}
+
+  /* Botones */
+  .btn-action {
+    display: inline-block; padding: 18px 40px; background: linear-gradient(45deg, #ff3300, #ffb300);
+    color: #fff !important; font-family:'Anton', sans-serif; font-size:1.5rem; text-transform: uppercase; letter-spacing: 2px;
+    border: none; border-radius: 5px; text-decoration: none;
+    box-shadow: 0 10px 20px rgba(255,51,0,0.4); transition: all 0.3s;
+  }
+  .btn-action:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255,179,0,0.6); }
+
+  .embed-box { width:100%; height:180px; background:rgba(0,0,0,0.8); border:2px solid #ff3300; display:flex; align-items:center; justify-content:center; border-radius:10px; margin-bottom:20px;}
+
+  /* Footer Premium TuSitioYa */
+  .footer-premium {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.5) 100%);
+    border-top: 1px solid rgba(255,179,0,0.3); border-radius: 15px; padding: 40px; margin-top: 60px;
+    display:flex; flex-direction:column; align-items:center; gap:15px; text-align:center;
+    box-shadow: inset 0 0 30px rgba(255,51,0,0.1);
+  }
+  .footer-premium p { margin:0; font-size:0.95rem; color:#aaa;}
+</style>
 </head>
 <body>
-<x-dc>
-<helmet>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DJ PIBOMBA | Presskit Interactivo</title>
-  
-  <link rel="icon" href="./logo.png" type="image/png">
-  <link rel="apple-touch-icon" href="./logo.png">
-  
-  <meta property="og:title" content="DJ PIBOMBA PRESSKIT">
-  <meta property="og:description" content="Reggaeton, Dancehall, Dembow y Guaracha">
-  <meta property="og:image" content="https://djpibomba.tusitioya.cl/caricature.jpg">
-  <meta property="og:url" content="https://djpibomba.tusitioya.cl/">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <style>
-    /* Ocultamos el scroll horizontal y preparamos el body para el scroll-jacking */
-    html, body { margin:0; padding:0; background:#080010; color:#fff; font-family:'Oswald', sans-serif; overflow-x:hidden; }
-    
-    a { color:#ffaa00; transition:all 0.3s; text-decoration:none; } 
-    a:hover { color:#fff; text-shadow:0 0 10px #ff007f; }
 
-    /* Contenedor Fijo de la Escena 3D */
-    .scene {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      perspective: 1800px;
-      z-index: 10;
-      display: flex; align-items: center; justify-content: center;
-      pointer-events: none; /* Deja pasar el scroll */
-    }
-
-    /* La Carta 3D */
-    .card {
-      width: 92vw; max-width: 900px;
-      height: 88vh;
-      position: relative;
-      transform-style: preserve-3d;
-      will-change: transform;
-    }
-
-    /* Caras de la Carta */
-    .face {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(255,0,127,0.4);
-      pointer-events: auto; /* Permite clicks dentro */
-      overflow: hidden;
-    }
-
-    /* Cara Frontal: Caricatura */
-    .front {
-      background: url('./caricature.jpg') center top/cover no-repeat;
-      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-      border: 3px solid #ffaa00;
-    }
-    
-    .front::after {
-      content:""; position:absolute; bottom:0; left:0; width:100%; height:60%;
-      background: linear-gradient(to top, rgba(8,0,16,1) 0%, transparent 100%); z-index:1; pointer-events:none;
-    }
-
-    .front-content {
-      position:relative; z-index:2; text-align:center; padding-bottom:40px; width:100%;
-    }
-
-    .scroll-indicator {
-      margin-top: 20px; animation: bounce 2s infinite; font-size: 1.2rem; color: #ff007f; letter-spacing: 2px;
-    }
-    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(15px);} }
-
-    /* Cara Trasera: Contenido Web */
-    .back {
-      transform: rotateY(180deg);
-      background: rgba(12, 0, 20, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 3px solid #ff007f;
-      display: flex; flex-direction: column;
-    }
-
-    /* Envoltura interna de la espalda para moverla con JS */
-    #back-scroller {
-      width: 100%; padding: 40px 30px; box-sizing: border-box;
-      will-change: transform;
-    }
-
-    /* Estilos del contenido de la espalda */
-    .title-urban { font-family:'Permanent Marker', cursive; color:#ffaa00; text-transform:uppercase; text-shadow:2px 2px 0px #ff007f; margin:0 0 20px 0; font-size:3rem;}
-    .text-urban { font-size:1.3rem; line-height:1.7; color:#ddd; font-weight:300; margin-bottom:20px;}
-    
-    .btn-action {
-      display: inline-block; padding: 16px 36px; background: linear-gradient(45deg, #ff007f, #ffaa00);
-      color: #fff !important; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-      border: none; border-radius: 50px; text-decoration: none;
-      box-shadow: 0 10px 20px rgba(255,0,127,0.4); transition: all 0.3s;
-    }
-    .btn-action:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 25px rgba(255,170,0,0.6); }
-
-    .social-btn {
-      display:inline-block; padding:10px 20px; border:2px solid rgba(255,255,255,0.2); 
-      border-radius:30px; color:#fff; font-weight:700; transition:all 0.3s; margin:5px;
-    }
-    .social-btn:hover { background:#ff007f; border-color:#ff007f; box-shadow:0 0 15px #ff007f; }
-
-    .embed-box { width:100%; height:160px; background:rgba(0,0,0,0.6); border:2px dashed #ffaa00; display:flex; align-items:center; justify-content:center; border-radius:15px; margin:20px 0;}
-
-  </style>
-</helmet>
-
-<!-- Background 3D de partículas -->
+<!-- Escenario de Fuego 3D -->
 <canvas id="canvas-3d" style="position:fixed; top:0; left:0; z-index:1; width:100vw; height:100vh; display:block; pointer-events:none;"></canvas>
 
-<!-- Escenario de la Tarjeta (Scroll-jacking) -->
 <div class="scene">
   <div class="card" id="card">
     
-    <!-- Frente: Avatar gigante -->
+    <!-- Cara 1: El Frente -->
     <div class="face front">
       <div class="front-content">
-        <h1 style="font-family:'Permanent Marker', cursive; margin:0; color:#ffaa00; text-shadow:2px 2px 0px #ff007f; font-size:1.5rem; letter-spacing:3px; padding-top:40px;">SCROLL PARA DESCUBRIR</h1>
-        <div class="scroll-indicator">▼ ▼ ▼</div>
+        <h1 style="font-family:'Anton', sans-serif; margin:0; color:#ffb300; text-shadow:3px 3px 0px #ff3300; font-size:3.5rem; letter-spacing:4px; padding-top:40px; text-transform:uppercase;">El Flow de la Bomba</h1>
+        <div class="scroll-indicator">SCROLL PARA ABRIR</div>
       </div>
     </div>
 
-    <!-- Espalda: La Página Web -->
+    <!-- Cara 2: Currículum / Espalda -->
     <div class="face back">
       <div id="back-scroller">
         
-        <h2 class="title-urban">El Origen</h2>
+        <!-- Bloque 1: Perfil -->
+        <h2 class="title-urban">Felipe Velásquez</h2>
+        <h3 class="subtitle">DJ Ultra Bailable / Productor</h3>
         <p class="text-urban">
-          Mi nombre es <strong style="color:#ffaa00;">Felipe Velásquez Hernández</strong>. Comencé mi carrera en 2018 destrozando pistas en restobares y eventos exclusivos. 
+          Mi misión es destrozar la pista de baile. Con una propuesta musical agresiva y técnica, me especializo en prender a miles de personas simultáneamente. 
         </p>
-        <p class="text-urban">
-          Me defino como un <strong>DJ Ultra Bailable</strong>. He dejado mi marca en locales icónicos como Brutus Bar, Roots Bar, Tribu, Club Caribe, Club Liv y Monkey Restobar. 
-        </p>
+        <div class="tags">
+          <span class="tag">Reggaeton</span>
+          <span class="tag">Dancehall</span>
+          <span class="tag">Dembow</span>
+          <span class="tag">Guaracha</span>
+        </div>
         
-        <hr style="border:0; border-top:2px dashed rgba(255,0,127,0.4); margin:30px 0;">
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:40px 0;">
 
-        <h2 class="title-urban" style="font-size:2.2rem;">Residencia Actual</h2>
-        <div style="padding-left:20px; border-left:4px solid #ffaa00;">
-          <h3 style="color:#ff007f; margin:0; font-family:'Permanent Marker', cursive; font-size:1.8rem;">Salón Cristale</h3>
-          <p style="color:#aaa; font-weight:700; margin:5px 0;">Desde Diciembre 2025</p>
-          <p class="text-urban" style="margin:0;">Llevando el flow y controlando la energía del club al siguiente nivel.</p>
+        <!-- Bloque 2: Timeline de Currículum -->
+        <h2 class="title-urban" style="font-size:2.8rem;">Trayectoria</h2>
+        <div class="timeline">
+          
+          <div class="timeline-item">
+            <p class="timeline-date">DIC 2025 - ACTUALIDAD</p>
+            <h4 class="timeline-title">Residencia: Salón Cristale</h4>
+            <p class="text-urban">DJ residente principal. Encargado de liderar la fiesta y mantener la energía del club en su punto más alto durante los fines de semana.</p>
+          </div>
+
+          <div class="timeline-item">
+            <p class="timeline-date">2018 - 2024</p>
+            <h4 class="timeline-title">Mainstages & Clubes</h4>
+            <p class="text-urban">Paso consolidado por los clubes más importantes de la escena urbana:</p>
+            <ul class="text-urban" style="margin-top:10px; color:#ffb300; font-weight:500;">
+              <li>Brutus Bar</li>
+              <li>Roots Bar</li>
+              <li>Tribu</li>
+              <li>Club Caribe</li>
+              <li>Club Liv</li>
+              <li>Monkey Restobar</li>
+            </ul>
+          </div>
+
+          <div class="timeline-item">
+            <p class="timeline-date">EXPERIENCIA ADICIONAL</p>
+            <h4 class="timeline-title">Eventos & Colaboraciones</h4>
+            <p class="text-urban">Experiencia comprobada compartiendo cabina con múltiples DJs de la escena y acompañando shows de artistas urbanos locales.</p>
+          </div>
         </div>
 
-        <hr style="border:0; border-top:2px dashed rgba(255,0,127,0.4); margin:30px 0;">
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:40px 0;">
 
-        <h2 class="title-urban" style="font-size:2.2rem;">Siente La Explosión</h2>
-        <p class="text-urban">Reggaeton · Dancehall · Dembow · Guaracha</p>
+        <!-- Bloque 3: Plataformas -->
+        <h2 class="title-urban" style="font-size:2.8rem;">Catálogo</h2>
+        <p class="text-urban">Material disponible en YouTube Music y SoundCloud.</p>
         <div class="embed-box">
-          <p style="font-family:'Permanent Marker', cursive; font-size:1.5rem; color:#ff007f; margin:0;">[SOUNDCLOUD EMBED AQUI]</p>
+          <p style="font-family:'Anton', sans-serif; font-size:1.8rem; color:#444; margin:0;">[YOUTUBE MUSIC EMBED]</p>
         </div>
-        <div style="text-align:center; margin-bottom:40px;">
-          <a href="https://tiktok.com/@DJPIBOMBA" target="_blank" class="social-btn">TikTok @DJPIBOMBA</a>
-          <a href="https://instagram.com/DJPIBOMBA" target="_blank" class="social-btn">Instagram @DJPIBOMBA</a>
-        </div>
-
-        <div style="background:rgba(255,0,127,0.1); border:1px solid #ff007f; border-radius:15px; padding:30px; text-align:center; margin-bottom:40px;">
-          <h2 class="title-urban" style="font-size:2rem; margin-bottom:10px;">Festivales & Booking</h2>
-          <p class="text-urban" style="margin-bottom:20px;">Mi objetivo principal es incendiar los grandes festivales.</p>
-          <a href="https://wa.me/56900000000?text=Booking%20DJ%20PIBOMBA" target="_blank" class="btn-action">Contratar Ahora</a>
+        <div class="embed-box">
+          <p style="font-family:'Anton', sans-serif; font-size:1.8rem; color:#444; margin:0;">[SOUNDCLOUD EMBED]</p>
         </div>
 
-        <!-- Footer integrado en la espalda -->
-        <div style="text-align:center; padding-top:20px; border-top:2px solid rgba(255,170,0,0.3);">
-          <p style="font-family:'Permanent Marker', cursive; color:#fff; font-size:1.2rem; margin:0 0 10px 0; text-shadow:2px 2px 0px #ff007f;">DESARROLLADO POR</p>
-          <a href="https://tusitioya.cl" target="_blank" style="display:inline-block;">
-            <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1772565447/Gemini_Generated_Image_th8p9ath8p9ath8p_2_ozvloh.png" alt="TuSitioYa Logo" style="max-width:120px; filter:drop-shadow(0 0 10px rgba(255,0,127,0.5));">
+        <!-- Bloque 4: Booking -->
+        <div style="background:rgba(255,51,0,0.1); border:2px solid #ff3300; padding:40px; text-align:center; margin:50px 0; border-radius:10px;">
+          <h2 class="title-urban" style="font-size:3rem; margin-bottom:5px;">Booking & Festivales</h2>
+          <p class="text-urban" style="margin-bottom:30px; font-weight:500;">Disponible para contrataciones en festivales de alto impacto a nivel nacional e internacional.</p>
+          <a href="https://wa.me/56900000000?text=Hola,%20me%20interesa%20contratar%20a%20DJ%20PIBOMBA%20para%20un%20festival" target="_blank" class="btn-action">Solicitar Booking</a>
+        </div>
+
+        <!-- Footer Premium TuSitioYa -->
+        <div class="footer-premium">
+          <h3 style="font-family:'Anton', sans-serif; font-size:1.5rem; color:#fff; margin:0; letter-spacing:1px;">PLATAFORMA CREADA POR</h3>
+          <a href="https://tusitioya.cl" target="_blank" style="display:inline-block; transition:transform 0.3s;">
+            <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1772565447/Gemini_Generated_Image_th8p9ath8p9ath8p_2_ozvloh.png" alt="TuSitioYa Agencia Digital" style="max-width:180px; filter:drop-shadow(0 0 20px rgba(255,51,0,0.5));">
           </a>
-          <p style="color:#666; font-size:0.9rem; margin:15px 0 0 0;">© 2026 DJ PIBOMBA — djpibomba.tusitioya.cl</p>
+          <p style="color:#ffb300; font-weight:700; margin-top:10px; font-size:1rem;">Agencia de Diseño y Desarrollo Web</p>
+          <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-top:5px;">
+            <a href="https://tusitioya.cl" target="_blank" style="color:#ccc; font-size:0.9rem; text-decoration:underline;">tusitioya.cl</a>
+            <span style="color:#666;">|</span>
+            <a href="mailto:contacto@tusitioya.cl" style="color:#ccc; font-size:0.9rem; text-decoration:underline;">contacto@tusitioya.cl</a>
+          </div>
+          <p style="margin-top:20px; font-size:0.8rem; color:#555;">© 2026 DJ PIBOMBA PRESSKIT. Todos los derechos reservados.</p>
         </div>
 
       </div>
     </div>
   </div>
 </div>
-</x-dc>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // --- 1. Lógica de Scroll 3D ---
+  // LÓGICA DE SCROLL 3D
   const card = document.getElementById('card');
   const backScroller = document.getElementById('back-scroller');
   
@@ -200,36 +226,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateHeights = () => {
     const windowH = window.innerHeight;
     flipAmount = windowH * 1.2; 
-    
-    // Obtenemos la altura real, incluso si las imágenes acaban de cargar
     const contentH = backScroller.scrollHeight; 
     const visibleBackH = windowH * 0.88; 
     
-    // Lo que necesitamos mover es el tamaño del contenido menos lo que ya se ve de la tarjeta, más un pequeño respiro
-    const extraScroll = Math.max(0, contentH - visibleBackH + 150); 
+    // Respiro extra para asegurar visión del footer
+    const extraScroll = Math.max(0, contentH - visibleBackH + 200); 
     maxExtra = extraScroll;
     
-    // El scroll máximo posible (window.scrollY) en un navegador es: document.height - window.innerHeight.
-    // Nosotros queremos que el scroll máximo sea igual a (flipAmount + maxExtra).
-    // Por lo tanto: document.height = flipAmount + maxExtra + window.innerHeight
     document.body.style.height = (flipAmount + extraScroll + windowH) + 'px';
   };
 
-  // ResizeObserver para vigilar cambios de altura (por fuentes, imágenes o redimensiones)
-  const resizeObserver = new ResizeObserver(() => {
-    updateHeights();
-  });
+  const resizeObserver = new ResizeObserver(() => { updateHeights(); });
   resizeObserver.observe(backScroller);
   
   const onScroll = () => {
     const y = window.scrollY || document.documentElement.scrollTop;
     
-    // Fase 1: Rotación (0 a 180)
     let rotation = (y / flipAmount) * 180;
     if (rotation > 180) rotation = 180;
     card.style.transform = `rotateY(${rotation}deg)`;
     
-    // Fase 2: Scroll del contenido de la espalda
     if (y > flipAmount) {
       const extra = y - flipAmount;
       const move = Math.min(extra, maxExtra);
@@ -241,61 +257,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', updateHeights);
   window.addEventListener('scroll', onScroll, {passive: true});
-  
-  // Inicializar
-  setTimeout(() => {
-    updateHeights();
-    onScroll();
-  }, 100); // Pequeño delay para asegurar que el DOM calcule bien las alturas
+  setTimeout(() => { updateHeights(); onScroll(); }, 100);
 
-
-  // --- 2. Lógica Three.js (Fondo de Partículas) ---
+  // LÓGICA THREE.JS (FUEGO/BRASAS)
   const initScene = () => {
     const canvas = document.getElementById('canvas-3d');
     if (!canvas || !window.THREE) return;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x080010, 0.003); 
+    scene.fog = new THREE.FogExp2(0x050000, 0.004); 
 
-    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 1000);
     camera.position.z = 100;
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
 
-    const particleCount = 1500;
+    const particleCount = 2500;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
+    const speeds = new Float32Array(particleCount); // Para el movimiento ascendente (fuego)
     
-    const colorMagenta = new THREE.Color('#ff007f');
-    const colorOrange = new THREE.Color('#ffaa00');
+    const colorRed = new THREE.Color('#ff3300');
+    const colorGold = new THREE.Color('#ffb300');
+    const colorDark = new THREE.Color('#440000');
 
     for(let i=0; i<particleCount; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos((Math.random() * 2) - 1);
-      const radius = 80 + Math.random() * 300; 
-      positions[i*3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i*3+2] = radius * Math.cos(phi);
+      positions[i*3] = (Math.random() - 0.5) * 400; // X
+      positions[i*3+1] = (Math.random() - 0.5) * 400; // Y
+      positions[i*3+2] = (Math.random() - 0.5) * 200; // Z
 
-      const mixedColor = Math.random() > 0.5 ? colorMagenta : colorOrange;
+      const r = Math.random();
+      const mixedColor = r > 0.8 ? colorGold : (r > 0.3 ? colorRed : colorDark);
       colors[i*3] = mixedColor.r; colors[i*3+1] = mixedColor.g; colors[i*3+2] = mixedColor.b;
+
+      speeds[i] = 10 + Math.random() * 30;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
 
+    // Textura de "brasa" / círculo difuminado
     const c = document.createElement('canvas'); c.width = 16; c.height = 16;
     const ctx = c.getContext('2d');
     const g = ctx.createRadialGradient(8,8,0, 8,8,8);
     g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.4, 'rgba(255,255,255,0.8)');
     g.addColorStop(1, 'rgba(255,255,255,0)');
     ctx.fillStyle = g; ctx.fillRect(0,0,16,16);
     const particleTexture = new THREE.CanvasTexture(c);
 
-    const material = new THREE.PointsMaterial({ size: 3, map: particleTexture, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.6 });
+    const material = new THREE.PointsMaterial({ 
+      size: 4, map: particleTexture, vertexColors: true, 
+      blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.8 
+    });
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
@@ -308,27 +326,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const clock = new THREE.Clock();
     const animate = () => {
       requestAnimationFrame(animate);
-      const dt = clock.getDelta();
+      const dt = Math.min(clock.getDelta(), 0.1);
+      
+      const positions = particles.geometry.attributes.position.array;
+      const speeds = particles.geometry.attributes.speed.array;
+
+      for(let i=0; i<particleCount; i++) {
+        // Movimiento ascendente tipo fuego/ceniza
+        positions[i*3+1] += speeds[i] * dt;
+        
+        // Movimiento lateral sinuoso
+        positions[i*3] += Math.sin(positions[i*3+1] * 0.05) * 5 * dt;
+
+        // Resetear partícula si sube demasiado
+        if (positions[i*3+1] > 200) {
+          positions[i*3+1] = -200;
+          positions[i*3] = (Math.random() - 0.5) * 400;
+        }
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
       
       const scrollRatio = (window.scrollY || 0) / (document.body.scrollHeight || 1);
-      
-      particles.rotation.y += dt * 0.1 + (scrollRatio * 0.05);
-      particles.rotation.z += dt * 0.05;
+      camera.position.y = - (scrollRatio * 50); // La cámara baja ligeramente mientras haces scroll
 
       renderer.render(scene, camera);
     };
     animate();
   };
 
-  // Esperar a que cargue Three.js si es necesario
-  if (window.THREE) {
-    initScene();
-  } else {
+  if (window.THREE) { initScene(); } else {
     const checkThree = setInterval(() => {
-      if (window.THREE) {
-        clearInterval(checkThree);
-        initScene();
-      }
+      if (window.THREE) { clearInterval(checkThree); initScene(); }
     }, 100);
   }
 });
