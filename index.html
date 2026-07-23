@@ -100,14 +100,7 @@
 
   .embed-box { width:100%; height:180px; background:rgba(0,0,0,0.8); border:2px solid #ff3300; display:flex; align-items:center; justify-content:center; border-radius:10px; margin-bottom:20px;}
 
-  /* Footer Premium TuSitioYa Compacto */
-  .footer-premium {
-    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.5) 100%);
-    border-top: 1px solid rgba(255,179,0,0.3); border-radius: 15px; padding: 20px; margin-top: 40px;
-    display:flex; flex-direction:column; align-items:center; text-align:center;
-    box-shadow: inset 0 0 30px rgba(255,51,0,0.1);
-  }
-  .footer-premium p { margin:0; font-size:0.95rem; color:#aaa;}
+
 </style>
 </head>
 <body>
@@ -197,22 +190,9 @@
           <a href="https://wa.me/56900000000?text=Hola,%20me%20interesa%20contratar%20a%20DJ%20PIBOMBA%20para%20un%20festival" target="_blank" class="btn-action">Solicitar Booking</a>
         </div>
 
-        <!-- Footer Premium TuSitioYa Compacto -->
-        <div class="footer-premium">
-          <div style="display:flex; align-items:center; justify-content:center; gap:15px; flex-wrap:wrap; margin-bottom:10px;">
-            <h3 style="font-family:'Anton', sans-serif; font-size:1.2rem; color:#fff; margin:0; letter-spacing:1px;">PLATAFORMA CREADA POR</h3>
-            <a href="https://tusitioya.cl/paginas-web" target="_blank" style="display:inline-block; transition:transform 0.3s;">
-              <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1772565447/Gemini_Generated_Image_th8p9ath8p9ath8p_2_ozvloh.png" alt="TuSitioYa Agencia Digital" style="height:55px; width:auto; filter:drop-shadow(0 0 15px rgba(255,255,255,0.4)) brightness(1.2);">
-            </a>
-          </div>
-          <p style="color:#ffb300; font-weight:700; font-size:0.8rem; margin:0 0 5px 0;">Agencia de Diseño y Desarrollo Web</p>
-          <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
-            <a href="https://tusitioya.cl/paginas-web" target="_blank" style="color:#ccc; font-size:0.8rem; text-decoration:underline;">tusitioya.cl/paginas-web</a>
-            <span style="color:#666; font-size:0.8rem;">|</span>
-            <a href="mailto:contacto@tusitioya.cl" style="color:#ccc; font-size:0.8rem; text-decoration:underline;">contacto@tusitioya.cl</a>
-          </div>
-          <p style="margin-top:10px; font-size:0.7rem; color:#555;">© 2026 DJ PIBOMBA PRESSKIT</p>
-        </div>
+        <!-- Footer Inyectado Global (TuSitioYa + Track IA) -->
+        <div id="tusitioya-global-footer"></div>
+        <script src="https://tusitioya.cl/global-footer-loader.js"></script>
 
       </div>
     </div>
