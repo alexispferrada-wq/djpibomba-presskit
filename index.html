@@ -205,10 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentH = backScroller.scrollHeight; 
     const visibleBackH = windowH * 0.88; 
     
-    // 600px de margen inferior para garantizar que el footer se vea entero
-    const extraScroll = Math.max(0, contentH - visibleBackH + 600); 
-    document.body.style.height = (flipAmount + extraScroll) + 'px';
+    // Lo que necesitamos mover es el tamaño del contenido menos lo que ya se ve de la tarjeta, más un pequeño respiro
+    const extraScroll = Math.max(0, contentH - visibleBackH + 150); 
     maxExtra = extraScroll;
+    
+    // El scroll máximo posible (window.scrollY) en un navegador es: document.height - window.innerHeight.
+    // Nosotros queremos que el scroll máximo sea igual a (flipAmount + maxExtra).
+    // Por lo tanto: document.height = flipAmount + maxExtra + window.innerHeight
+    document.body.style.height = (flipAmount + extraScroll + windowH) + 'px';
   };
 
   // ResizeObserver para vigilar cambios de altura (por fuentes, imágenes o redimensiones)
