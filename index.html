@@ -57,6 +57,7 @@
 
   .scroll-indicator { margin-top: 25px; animation: bounce 2s infinite; font-size: 1.5rem; color: #ffb300; letter-spacing: 3px; font-family:'Anton', sans-serif;}
   @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(15px);} }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
   /* ESPALDA - CURRÍCULUM */
   .back {
@@ -120,7 +121,8 @@
     <!-- Cara 1: El Frente -->
     <div class="face front">
       <div class="front-content">
-        <h1 style="font-family:'Anton', sans-serif; margin:0; color:#ffb300; text-shadow:3px 3px 0px #ff3300; font-size:3.5rem; letter-spacing:4px; padding-top:40px; text-transform:uppercase;">El Flow de la Bomba</h1>
+        <img src="./logo.png" alt="DJ PIBOMBA" style="width:95%; max-width:550px; filter:drop-shadow(0 0 30px #ff3300); margin-bottom:15px; animation: pulse 3s infinite;">
+        <h1 style="font-family:'Anton', sans-serif; margin:0; color:#ffb300; text-shadow:3px 3px 0px #ff3300; font-size:3.5rem; letter-spacing:4px; text-transform:uppercase;">El Flow de la Bomba</h1>
         <div class="scroll-indicator">SCROLL PARA ABRIR</div>
       </div>
     </div>
@@ -231,8 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentH = backScroller.scrollHeight; 
     const visibleBackH = windowH * 0.88; 
     
-    // Respiro extra para asegurar visión del footer
-    const extraScroll = Math.max(0, contentH - visibleBackH + 200); 
+    // Eliminamos el respiro extra grande para que termine justo debajo del footer
+    const extraScroll = Math.max(0, contentH - visibleBackH + 20); 
     maxExtra = extraScroll;
     
     document.body.style.height = (flipAmount + extraScroll + windowH) + 'px';
