@@ -199,15 +199,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const updateHeights = () => {
     const windowH = window.innerHeight;
-    flipAmount = windowH * 1.2; // Hacemos el giro un poco más rápido
-    const contentH = backScroller.scrollHeight; // Usar scrollHeight para medir todo el contenido
+    flipAmount = windowH * 1.2; 
+    
+    // Obtenemos la altura real, incluso si las imágenes acaban de cargar
+    const contentH = backScroller.scrollHeight; 
     const visibleBackH = windowH * 0.88; 
     
-    // Añadimos 400px extra de respiro para que nunca quede corto
-    const extraScroll = Math.max(0, contentH - visibleBackH + 400); 
+    // 600px de margen inferior para garantizar que el footer se vea entero
+    const extraScroll = Math.max(0, contentH - visibleBackH + 600); 
     document.body.style.height = (flipAmount + extraScroll) + 'px';
     maxExtra = extraScroll;
   };
+
+  // ResizeObserver para vigilar cambios de altura (por fuentes, imágenes o redimensiones)
+  const resizeObserver = new ResizeObserver(() => {
+    updateHeights();
+  });
+  resizeObserver.observe(backScroller);
   
   const onScroll = () => {
     const y = window.scrollY || document.documentElement.scrollTop;
