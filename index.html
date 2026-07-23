@@ -103,7 +103,7 @@
   <section class="glass-panel" style="width:100%; box-sizing:border-box;">
     <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center;">
       <div style="flex:1; min-width:300px;">
-        <img src="./photo.png" alt="Felipe Velasquez" style="width:100%; border-radius:15px; border:3px solid #ff007f; box-shadow:0 0 30px rgba(255,0,127,0.5); object-fit:cover;">
+        <img src="./caricature.jpg" alt="Felipe Velasquez Caricatura" style="width:100%; border-radius:15px; border:3px solid #ff007f; box-shadow:0 0 30px rgba(255,0,127,0.5); object-fit:cover;">
       </div>
       <div style="flex:1.5; min-width:300px;">
         <h2 class="title-urban" style="font-size:3rem;">Ultra Bailable</h2>
@@ -165,88 +165,67 @@ class Component extends DCLogic {
     const canvas = document.getElementById('canvas-3d');
     if (!canvas) return;
 
-    // Escena inmersiva explosiva estilo Festival
+    const FIRE = new THREE.Color('#ffaa00');
+    const FUCHSIA = new THREE.Color('#ff007f');
+    const DARK = new THREE.Color('#080010');
+    const PALETTE = [FIRE, FUCHSIA, DARK];
+    const density = 1400;
+    const speed = 14; 
+
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x080010, 0.003); // Niebla oscura morada
-
-    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
-    camera.position.z = 100;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+    scene.fog = new THREE.FogExp2(0x080010, 0.012);
+    const camera = new THREE.PerspectiveCamera(78, innerWidth / innerHeight, 0.1, 400);
+    camera.position.set(0, 0, 30);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
 
-    // Sistema de Partículas Esféricas (Bomba/Explosión)
-    const particleCount = 2000;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-    
-    const colorMagenta = new THREE.Color('#ff007f');
-    const colorOrange = new THREE.Color('#ffaa00');
-
-    for(let i=0; i<particleCount; i++) {
-      // Distribución esférica gigante envolvente
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos((Math.random() * 2) - 1);
-      const radius = 50 + Math.random() * 250; 
-
-      positions[i*3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i*3+2] = radius * Math.cos(phi);
-
-      // Mezcla de colores (50% magenta, 50% naranja)
-      const mixedColor = Math.random() > 0.5 ? colorMagenta : colorOrange;
-      colors[i*3] = mixedColor.r;
-      colors[i*3+1] = mixedColor.g;
-      colors[i*3+2] = mixedColor.b;
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    // Crear textura circular suave para las partículas
-    const c = document.createElement('canvas'); c.width = 32; c.height = 32;
-    const ctx = c.getContext('2d');
-    const g = ctx.createRadialGradient(16,16,0, 16,16,16);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g; ctx.fillRect(0,0,32,32);
-    const particleTexture = new THREE.CanvasTexture(c);
-
-    const material = new THREE.PointsMaterial({
-      size: 4,
-      map: particleTexture,
-      vertexColors: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      transparent: true,
-      opacity: 0.8
-    });
-
-    const particles = new THREE.Points(geometry, material);
-    scene.add(particles);
-
-    // Geometrías flotantes en el fondo (anillos vibrantes)
+    const TUNNEL_R = 20, DEPTH = 280;
+    const RINGS = 42;
     const rings = [];
-    const ringGeo = new THREE.TorusGeometry(120, 0.5, 16, 100);
-    for(let j=0; j<4; j++) {
-      const rMat = new THREE.MeshBasicMaterial({ 
-        color: (j%2===0) ? 0xff007f : 0xffaa00,
-        blending: THREE.AdditiveBlending, transparent:true, opacity:0.3, side: THREE.DoubleSide
-      });
-      const ring = new THREE.Mesh(ringGeo, rMat);
-      ring.rotation.x = Math.random() * Math.PI;
-      ring.rotation.y = Math.random() * Math.PI;
+    const ringGeo = new THREE.TorusGeometry(TUNNEL_R, 0.15, 8, 72);
+    for (let i = 0; i < RINGS; i++) {
+      const col = PALETTE[i % 2]; // Solo FIRE y FUCHSIA
+      const mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+      const ring = new THREE.Mesh(ringGeo, mat);
+      ring.position.z = 30 - i * (DEPTH / RINGS);
       scene.add(ring);
       rings.push(ring);
     }
 
+    const tube = new THREE.Mesh(
+      new THREE.CylinderGeometry(TUNNEL_R + 0.4, TUNNEL_R + 0.4, DEPTH + 60, 28, 24, true),
+      new THREE.MeshBasicMaterial({ color: 0x440022, wireframe: true, transparent: true, opacity: 0.5 })
+    );
+    tube.rotation.x = Math.PI / 2;
+    tube.position.z = 30 - DEPTH / 2;
+    scene.add(tube);
+
+    // Partículas que acompañan al túnel
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.25, 'rgba(255,255,255,.7)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
+    const glowTex = new THREE.CanvasTexture(c);
+
+    const pGeo = new THREE.BufferGeometry();
+    const pos = new Float32Array(density * 3);
+    for (let i = 0; i < density; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.random() * (TUNNEL_R - 2);
+      pos[i * 3] = Math.cos(a) * r;
+      pos[i * 3 + 1] = Math.sin(a) * r;
+      pos[i * 3 + 2] = 40 - Math.random() * DEPTH;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const dust = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 1.2, map: glowTex, color: 0xff007f, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
+    scene.add(dust);
+
     let mouseX = 0, mouseY = 0;
-    const onMouse = e => { 
-      mouseX = (e.clientX / innerWidth) * 2 - 1; 
-      mouseY = -(e.clientY / innerHeight) * 2 + 1; 
-    };
+    const onMouse = e => { mouseX = e.clientX / innerWidth - 0.5; mouseY = e.clientY / innerHeight - 0.5; };
     document.addEventListener('mousemove', onMouse);
 
     const onResize = () => {
@@ -255,44 +234,43 @@ class Component extends DCLogic {
       renderer.setSize(innerWidth, innerHeight);
     };
     window.addEventListener('resize', onResize);
-
+    
     let hidden = false;
     const onVis = () => { hidden = document.hidden; if (!hidden) animate(); };
     document.addEventListener('visibilitychange', onVis);
 
     const clock = new THREE.Clock();
-    
     const animate = () => {
       if (this._disposed || hidden) return;
       this._raf = requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const t = clock.getElapsedTime();
       
-      const dt = Math.min(clock.getDelta(), 0.1);
-      const time = clock.getElapsedTime();
-
-      // Rotar sistema de partículas
-      particles.rotation.y += dt * 0.15;
-      particles.rotation.z += dt * 0.05;
-
-      // Efecto "Bombo/Kick" en la escala basado en una onda sinusoide rápida
-      const beat = Math.pow(Math.sin(time * Math.PI * 2.2), 4); 
+      const beat = Math.max(0, Math.sin(t * Math.PI * 2.2)); 
+      for (const ring of rings) {
+        ring.position.z += speed * dt;
+        if (ring.position.z > 34) ring.position.z -= DEPTH;
+        const prox = 1 - Math.min(1, (34 - ring.position.z) / DEPTH);
+        ring.material.opacity = 0.4 + prox * 0.4 + beat * 0.2;
+        ring.rotation.z += dt * 0.3;
+        const s = 1 + beat * 0.1;
+        ring.scale.set(s, s, 1);
+      }
+      const arr = pGeo.attributes.position.array;
+      for (let i = 2; i < arr.length; i += 3) {
+        arr[i] += speed * 2.2 * dt;
+        if (arr[i] > 36) arr[i] -= DEPTH;
+      }
+      pGeo.attributes.position.needsUpdate = true;
+      tube.rotation.y += dt * 0.08;
       
-      // Rotar los anillos y pulsar
-      rings.forEach((ring, idx) => {
-        ring.rotation.x += dt * (0.2 + idx*0.05);
-        ring.rotation.y -= dt * (0.15 + idx*0.05);
-        const scale = 1 + beat * 0.05;
-        ring.scale.set(scale, scale, scale);
-        ring.material.opacity = 0.2 + (beat * 0.4);
-      });
-
-      // Movimiento de cámara reaccionando al mouse (suave)
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const motionScale = prefersReducedMotion ? 0 : 1;
+      const motionScale = prefersReducedMotion ? 0.2 : 1.0;
 
-      camera.position.x += (mouseX * 30 * motionScale - camera.position.x) * 0.05;
-      camera.position.y += (mouseY * 30 * motionScale - camera.position.y) * 0.05;
-      camera.lookAt(scene.position);
-
+      camera.position.x += (Math.sin(t * 0.5) * 2.5 + (mouseX * 18 * motionScale) - camera.position.x) * 0.05;
+      camera.position.y += (Math.cos(t * 0.6) * 1.8 + (-mouseY * 15 * motionScale) - camera.position.y) * 0.05;
+      camera.lookAt(Math.sin(t * 0.5) * 1.5, Math.cos(t * 0.6) * 1.0, -60);
+      
       renderer.render(scene, camera);
     };
     animate();
@@ -302,9 +280,8 @@ class Component extends DCLogic {
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVis);
       renderer.dispose();
-      geometry.dispose();
-      material.dispose();
       ringGeo.dispose();
+      pGeo.dispose();
     };
   }
 }
