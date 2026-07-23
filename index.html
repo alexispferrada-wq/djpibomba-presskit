@@ -10,278 +10,331 @@
 <helmet>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DJ PIBOMBA | Presskit Profesional</title>
+  <title>DJ PIBOMBA | Presskit Interactivo</title>
   
   <link rel="icon" href="./logo.png" type="image/png">
   <link rel="apple-touch-icon" href="./logo.png">
   
   <meta property="og:title" content="DJ PIBOMBA PRESSKIT">
   <meta property="og:description" content="Reggaeton, Dancehall, Dembow y Guaracha">
-  <meta property="og:image" content="https://djpibomba.tusitioya.cl/logo.png">
+  <meta property="og:image" content="https://djpibomba.tusitioya.cl/caricature.jpg">
   <meta property="og:url" content="https://djpibomba.tusitioya.cl/">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
+    /* Ocultamos el scroll horizontal y preparamos el body para el scroll-jacking */
     html, body { margin:0; padding:0; background:#080010; color:#fff; font-family:'Oswald', sans-serif; overflow-x:hidden; }
     
-    /* Malla sutil oscura, casi invisible, para dar textura al cristal */
-    body::after {
-      content:""; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:1; pointer-events:none;
-      background: radial-gradient(circle at center, transparent 40%, rgba(8,0,16,0.9) 100%);
+    a { color:#ffaa00; transition:all 0.3s; text-decoration:none; } 
+    a:hover { color:#fff; text-shadow:0 0 10px #ff007f; }
+
+    /* Contenedor Fijo de la Escena 3D */
+    .scene {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      perspective: 1800px;
+      z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none; /* Deja pasar el scroll */
     }
 
-    a { color:#ffaa00; transition:all 0.3s; } 
-    a:hover { color:#fff; text-shadow:0 0 10px #ff007f; }
-    
-    .glass-panel {
-      background: rgba(20, 0, 30, 0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 0, 127, 0.3);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,170,0,0.1);
-      margin-bottom: 40px;
+    /* La Carta 3D */
+    .card {
+      width: 92vw; max-width: 900px;
+      height: 88vh;
       position: relative;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* Caras de la Carta */
+    .face {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(255,0,127,0.4);
+      pointer-events: auto; /* Permite clicks dentro */
       overflow: hidden;
     }
-    
-    .glass-panel::before {
-      content:""; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
-      background: radial-gradient(circle, rgba(255,170,0,0.1) 0%, transparent 60%);
-      pointer-events: none;
-      animation: rotateLight 10s linear infinite;
+
+    /* Cara Frontal: Caricatura */
+    .front {
+      background: url('./caricature.jpg') center top/cover no-repeat;
+      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+      border: 3px solid #ffaa00;
     }
-    @keyframes rotateLight {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    
+    .front::after {
+      content:""; position:absolute; bottom:0; left:0; width:100%; height:60%;
+      background: linear-gradient(to top, rgba(8,0,16,1) 0%, transparent 100%); z-index:1; pointer-events:none;
     }
 
-    .title-urban { font-family:'Permanent Marker', cursive; color:#ffaa00; text-transform:uppercase; text-shadow:3px 3px 0px #ff007f; margin-top:0;}
+    .front-content {
+      position:relative; z-index:2; text-align:center; padding-bottom:40px; width:100%;
+    }
+
+    .scroll-indicator {
+      margin-top: 20px; animation: bounce 2s infinite; font-size: 1.2rem; color: #ff007f; letter-spacing: 2px;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(15px);} }
+
+    /* Cara Trasera: Contenido Web */
+    .back {
+      transform: rotateY(180deg);
+      background: rgba(12, 0, 20, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 3px solid #ff007f;
+      display: flex; flex-direction: column;
+    }
+
+    /* Envoltura interna de la espalda para moverla con JS */
+    #back-scroller {
+      width: 100%; padding: 40px 30px; box-sizing: border-box;
+      will-change: transform;
+    }
+
+    /* Estilos del contenido de la espalda */
+    .title-urban { font-family:'Permanent Marker', cursive; color:#ffaa00; text-transform:uppercase; text-shadow:2px 2px 0px #ff007f; margin:0 0 20px 0; font-size:3rem;}
+    .text-urban { font-size:1.3rem; line-height:1.7; color:#ddd; font-weight:300; margin-bottom:20px;}
     
     .btn-action {
-      display: inline-block; padding: 15px 35px; background: linear-gradient(45deg, #ff007f, #ffaa00);
+      display: inline-block; padding: 16px 36px; background: linear-gradient(45deg, #ff007f, #ffaa00);
       color: #fff !important; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
       border: none; border-radius: 50px; text-decoration: none;
-      box-shadow: 0 10px 20px rgba(255,0,127,0.4); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 20px rgba(255,0,127,0.4); transition: all 0.3s;
     }
-    .btn-action:hover {
-      transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 25px rgba(255,170,0,0.6);
-    }
+    .btn-action:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 25px rgba(255,170,0,0.6); }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 10px 15px rgba(255,0,127,0.5)); }
-      50% { transform: translateY(-15px) rotate(2deg); filter: drop-shadow(0 25px 25px rgba(255,170,0,0.6)); }
-    }
-    
     .social-btn {
       display:inline-block; padding:10px 20px; border:2px solid rgba(255,255,255,0.2); 
-      border-radius:30px; text-decoration:none; color:#fff; font-weight:700;
-      backdrop-filter:blur(5px); transition:all 0.3s;
+      border-radius:30px; color:#fff; font-weight:700; transition:all 0.3s; margin:5px;
     }
     .social-btn:hover { background:#ff007f; border-color:#ff007f; box-shadow:0 0 15px #ff007f; }
+
+    .embed-box { width:100%; height:160px; background:rgba(0,0,0,0.6); border:2px dashed #ffaa00; display:flex; align-items:center; justify-content:center; border-radius:15px; margin:20px 0;}
 
   </style>
 </helmet>
 
-<canvas id="canvas-3d" style="position:fixed; top:0; left:0; z-index:0; width:100vw; height:100vh; display:block; pointer-events:none;"></canvas>
+<!-- Background 3D de partículas -->
+<canvas id="canvas-3d" style="position:fixed; top:0; left:0; z-index:1; width:100vw; height:100vh; display:block; pointer-events:none;"></canvas>
 
-<!-- Contenido Flotante -->
-<main style="position:relative; z-index:2; max-width:1000px; margin:0 auto; padding:60px 20px; display:flex; flex-direction:column; align-items:center;">
-
-  <!-- Hero Logo -->
-  <div style="width:100%; max-width:600px; text-align:center; margin: 5vh 0 10vh 0;">
-    <img src="./logo.png" alt="DJ PIBOMBA LOGO" style="width:100%; height:auto; animation: float 6s ease-in-out infinite; filter: drop-shadow(0 0 20px #ff007f);">
-    <p style="font-family:'Permanent Marker', cursive; font-size:2rem; letter-spacing:3px; color:#ffaa00; text-shadow:2px 2px 0px #ff007f; margin-top:20px;">
-      REGGAETON · DANCEHALL · DEMBOW · GUARACHA
-    </p>
-  </div>
-
-  <!-- BIO Y FOTO (Glassmorphism) -->
-  <section class="glass-panel" style="width:100%; box-sizing:border-box;">
-    <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center;">
-      <div style="flex:1; min-width:300px;">
-        <img src="./caricature.jpg" alt="Felipe Velasquez Caricatura" style="width:100%; border-radius:15px; border:3px solid #ff007f; box-shadow:0 0 30px rgba(255,0,127,0.5); object-fit:cover;">
+<!-- Escenario de la Tarjeta (Scroll-jacking) -->
+<div class="scene">
+  <div class="card" id="card">
+    
+    <!-- Frente: Avatar gigante -->
+    <div class="face front">
+      <div class="front-content">
+        <img src="./logo.png" alt="DJ PIBOMBA" style="width:280px; max-width:80%; filter:drop-shadow(0 0 15px #ff007f); margin-bottom:10px;">
+        <h1 style="font-family:'Permanent Marker', cursive; margin:0; color:#ffaa00; text-shadow:2px 2px 0px #ff007f; font-size:1.5rem; letter-spacing:3px;">SCROLL PARA DESCUBRIR</h1>
+        <div class="scroll-indicator">▼ ▼ ▼</div>
       </div>
-      <div style="flex:1.5; min-width:300px;">
-        <h2 class="title-urban" style="font-size:3rem;">Ultra Bailable</h2>
-        <p style="font-size:1.3rem; line-height:1.7; color:#ddd; font-weight:300;">
+    </div>
+
+    <!-- Espalda: La Página Web -->
+    <div class="face back">
+      <div id="back-scroller">
+        
+        <h2 class="title-urban">El Origen</h2>
+        <p class="text-urban">
           Mi nombre es <strong style="color:#ffaa00;">Felipe Velásquez Hernández</strong>. Comencé mi carrera en 2018 destrozando pistas en restobares y eventos exclusivos. 
         </p>
-        <p style="font-size:1.2rem; line-height:1.7; color:#ddd; font-weight:300;">
-          He dejado mi marca en <strong>Brutus Bar, Roots Bar, Tribu, Club Caribe, Club Liv y Monkey Restobar</strong>. Actualmente soy el DJ residente en <strong>Salón Cristale</strong>, llevando el flow al siguiente nivel. ¡Mi misión actual es postular a los mejores festivales del país!
+        <p class="text-urban">
+          Me defino como un <strong>DJ Ultra Bailable</strong>. He dejado mi marca en locales icónicos como Brutus Bar, Roots Bar, Tribu, Club Caribe, Club Liv y Monkey Restobar. 
         </p>
-        <div style="margin-top:30px; display:flex; gap:15px; flex-wrap:wrap;">
-          <a href="https://wa.me/56900000000?text=Booking%20DJ%20PIBOMBA" target="_blank" class="btn-action">Booking / Contacto</a>
+        
+        <hr style="border:0; border-top:2px dashed rgba(255,0,127,0.4); margin:30px 0;">
+
+        <h2 class="title-urban" style="font-size:2.2rem;">Residencia Actual</h2>
+        <div style="padding-left:20px; border-left:4px solid #ffaa00;">
+          <h3 style="color:#ff007f; margin:0; font-family:'Permanent Marker', cursive; font-size:1.8rem;">Salón Cristale</h3>
+          <p style="color:#aaa; font-weight:700; margin:5px 0;">Desde Diciembre 2025</p>
+          <p class="text-urban" style="margin:0;">Llevando el flow y controlando la energía del club al siguiente nivel.</p>
         </div>
+
+        <hr style="border:0; border-top:2px dashed rgba(255,0,127,0.4); margin:30px 0;">
+
+        <h2 class="title-urban" style="font-size:2.2rem;">Siente La Explosión</h2>
+        <p class="text-urban">Reggaeton · Dancehall · Dembow · Guaracha</p>
+        <div class="embed-box">
+          <p style="font-family:'Permanent Marker', cursive; font-size:1.5rem; color:#ff007f; margin:0;">[SOUNDCLOUD EMBED AQUI]</p>
+        </div>
+        <div style="text-align:center; margin-bottom:40px;">
+          <a href="https://tiktok.com/@DJPIBOMBA" target="_blank" class="social-btn">TikTok @DJPIBOMBA</a>
+          <a href="https://instagram.com/DJPIBOMBA" target="_blank" class="social-btn">Instagram @DJPIBOMBA</a>
+        </div>
+
+        <div style="background:rgba(255,0,127,0.1); border:1px solid #ff007f; border-radius:15px; padding:30px; text-align:center; margin-bottom:40px;">
+          <h2 class="title-urban" style="font-size:2rem; margin-bottom:10px;">Festivales & Booking</h2>
+          <p class="text-urban" style="margin-bottom:20px;">Mi objetivo principal es incendiar los grandes festivales.</p>
+          <a href="https://wa.me/56900000000?text=Booking%20DJ%20PIBOMBA" target="_blank" class="btn-action">Contratar Ahora</a>
+        </div>
+
+        <!-- Footer integrado en la espalda -->
+        <div style="text-align:center; padding-top:20px; border-top:2px solid rgba(255,170,0,0.3);">
+          <p style="font-family:'Permanent Marker', cursive; color:#fff; font-size:1.2rem; margin:0 0 10px 0; text-shadow:2px 2px 0px #ff007f;">DESARROLLADO POR</p>
+          <a href="https://tusitioya.cl" target="_blank" style="display:inline-block;">
+            <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1772565447/Gemini_Generated_Image_th8p9ath8p9ath8p_2_ozvloh.png" alt="TuSitioYa Logo" style="max-width:120px; filter:drop-shadow(0 0 10px rgba(255,0,127,0.5));">
+          </a>
+          <p style="color:#666; font-size:0.9rem; margin:15px 0 0 0;">© 2026 DJ PIBOMBA — djpibomba.tusitioya.cl</p>
+        </div>
+
       </div>
     </div>
-  </section>
-
-  <!-- MULTIMEDIA & REDES -->
-  <section class="glass-panel" style="width:100%; box-sizing:border-box; text-align:center;">
-    <h2 class="title-urban" style="font-size:2.5rem;">Siente La Explosión</h2>
-    <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-bottom:30px;">
-      <a href="https://tiktok.com/@DJPIBOMBA" target="_blank" class="social-btn">TikTok @DJPIBOMBA</a>
-      <a href="https://instagram.com/DJPIBOMBA" target="_blank" class="social-btn">Instagram @DJPIBOMBA</a>
-    </div>
-    
-    <div style="width:100%; max-width:700px; margin:0 auto; height:180px; background:rgba(0,0,0,0.6); border:2px dashed #ffaa00; display:flex; align-items:center; justify-content:center; border-radius:15px;">
-      <p style="font-family:'Permanent Marker', cursive; font-size:1.5rem; color:#ff007f;">[SOUNDCLOUD EMBED AQUI]</p>
-    </div>
-  </section>
-
-</main>
-
-<footer style="background:#05000a; border-top:1px solid #ff007f; padding:30px 20px; text-align:center; position:relative; z-index:2;">
-  <div style="max-width:900px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:15px">
-    <div style="display:flex; align-items:center; justify-content:center; gap:15px; flex-wrap:wrap;">
-      <p style="font-family:'Permanent Marker', cursive; color:#fff; font-size:1.2rem; margin:0; text-shadow:2px 2px 0px #ff007f;">DESARROLLADO POR</p>
-      <a href="https://tusitioya.cl" target="_blank" style="display:inline-block;">
-        <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1772565447/Gemini_Generated_Image_th8p9ath8p9ath8p_2_ozvloh.png" alt="TuSitioYa Logo" style="max-width:120px; height:auto; display:block; filter:drop-shadow(0 0 10px rgba(255,0,127,0.5));">
-      </a>
-    </div>
-    <p style="color:#888; font-size:0.9rem; margin:0;">© 2026 DJ PIBOMBA — djpibomba.tusitioya.cl</p>
   </div>
-</footer>
+</div>
 </x-dc>
 
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   componentDidMount() {
-    this._raf = 0; this._disposed = false;
+    this._disposed = false;
+    this.initScrollLogic();
     const boot = () => { if (window.THREE) this.initScene(); else if (!this._disposed) setTimeout(boot, 50); };
     boot();
   }
+  
   componentWillUnmount() {
     this._disposed = true;
-    cancelAnimationFrame(this._raf);
-    if (this._cleanup) this._cleanup();
+    if (this._cleanupScroll) this._cleanupScroll();
+    if (this._cleanup3D) this._cleanup3D();
+  }
+
+  initScrollLogic() {
+    const card = document.getElementById('card');
+    const backScroller = document.getElementById('back-scroller');
+    
+    // Calcular dinámicamente cuánto espacio necesitamos para el scroll
+    const updateHeights = () => {
+      if(this._disposed) return;
+      const windowH = window.innerHeight;
+      const flipAmount = windowH * 1.5; // Scroll requerido para voltear la carta
+      const contentH = backScroller.getBoundingClientRect().height;
+      const visibleBackH = windowH * 0.88; // height de la .card (88vh)
+      
+      // La altura total del body será: Lo que cuesta girar + lo que sobra de contenido
+      const extraScroll = Math.max(0, contentH - visibleBackH + 80); // 80px de respiro
+      document.body.style.height = (flipAmount + extraScroll) + 'px';
+      
+      this._flipAmount = flipAmount;
+      this._maxExtra = extraScroll;
+    };
+    
+    updateHeights();
+    
+    const onScroll = () => {
+      if(this._disposed) return;
+      const y = window.scrollY;
+      
+      // Fase 1: Rotación (0 a 180)
+      let rotation = (y / this._flipAmount) * 180;
+      if (rotation > 180) rotation = 180;
+      card.style.transform = `rotateY(${rotation}deg)`;
+      
+      // Fase 2: Scroll del contenido de la espalda
+      if (y > this._flipAmount) {
+        const extra = y - this._flipAmount;
+        // Evitamos scrollear más allá del límite inferior del contenido
+        const move = Math.min(extra, this._maxExtra);
+        backScroller.style.transform = `translateY(-${move}px)`;
+      } else {
+        backScroller.style.transform = `translateY(0px)`;
+      }
+    };
+
+    window.addEventListener('resize', updateHeights);
+    window.addEventListener('scroll', onScroll, {passive: true});
+    
+    // Disparar una vez para estado inicial
+    onScroll();
+
+    this._cleanupScroll = () => {
+      window.removeEventListener('resize', updateHeights);
+      window.removeEventListener('scroll', onScroll);
+    };
   }
 
   initScene() {
     const canvas = document.getElementById('canvas-3d');
     if (!canvas) return;
 
-    const FIRE = new THREE.Color('#ffaa00');
-    const FUCHSIA = new THREE.Color('#ff007f');
-    const DARK = new THREE.Color('#080010');
-    const PALETTE = [FIRE, FUCHSIA, DARK];
-    const density = 1400;
-    const speed = 14; 
-
+    // Escena de partículas explosivas para adornar el fondo del giro
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x080010, 0.012);
-    const camera = new THREE.PerspectiveCamera(78, innerWidth / innerHeight, 0.1, 400);
-    camera.position.set(0, 0, 30);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    scene.fog = new THREE.FogExp2(0x080010, 0.003); 
+
+    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+    camera.position.z = 100;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
 
-    const TUNNEL_R = 20, DEPTH = 280;
-    const RINGS = 42;
-    const rings = [];
-    const ringGeo = new THREE.TorusGeometry(TUNNEL_R, 0.15, 8, 72);
-    for (let i = 0; i < RINGS; i++) {
-      const col = PALETTE[i % 2]; // Solo FIRE y FUCHSIA
-      const mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
-      const ring = new THREE.Mesh(ringGeo, mat);
-      ring.position.z = 30 - i * (DEPTH / RINGS);
-      scene.add(ring);
-      rings.push(ring);
+    const particleCount = 1500;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    
+    const colorMagenta = new THREE.Color('#ff007f');
+    const colorOrange = new THREE.Color('#ffaa00');
+
+    for(let i=0; i<particleCount; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos((Math.random() * 2) - 1);
+      const radius = 80 + Math.random() * 300; 
+      positions[i*3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i*3+2] = radius * Math.cos(phi);
+
+      const mixedColor = Math.random() > 0.5 ? colorMagenta : colorOrange;
+      colors[i*3] = mixedColor.r; colors[i*3+1] = mixedColor.g; colors[i*3+2] = mixedColor.b;
     }
 
-    const tube = new THREE.Mesh(
-      new THREE.CylinderGeometry(TUNNEL_R + 0.4, TUNNEL_R + 0.4, DEPTH + 60, 28, 24, true),
-      new THREE.MeshBasicMaterial({ color: 0x440022, wireframe: true, transparent: true, opacity: 0.5 })
-    );
-    tube.rotation.x = Math.PI / 2;
-    tube.position.z = 30 - DEPTH / 2;
-    scene.add(tube);
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-    // Partículas que acompañan al túnel
-    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const c = document.createElement('canvas'); c.width = 16; c.height = 16;
     const ctx = c.getContext('2d');
-    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    const g = ctx.createRadialGradient(8,8,0, 8,8,8);
     g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.25, 'rgba(255,255,255,.7)');
     g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
-    const glowTex = new THREE.CanvasTexture(c);
+    ctx.fillStyle = g; ctx.fillRect(0,0,16,16);
+    const particleTexture = new THREE.CanvasTexture(c);
 
-    const pGeo = new THREE.BufferGeometry();
-    const pos = new Float32Array(density * 3);
-    for (let i = 0; i < density; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = Math.random() * (TUNNEL_R - 2);
-      pos[i * 3] = Math.cos(a) * r;
-      pos[i * 3 + 1] = Math.sin(a) * r;
-      pos[i * 3 + 2] = 40 - Math.random() * DEPTH;
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const dust = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 1.2, map: glowTex, color: 0xff007f, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
-    scene.add(dust);
-
-    let mouseX = 0, mouseY = 0;
-    const onMouse = e => { mouseX = e.clientX / innerWidth - 0.5; mouseY = e.clientY / innerHeight - 0.5; };
-    document.addEventListener('mousemove', onMouse);
+    const material = new THREE.PointsMaterial({ size: 3, map: particleTexture, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.6 });
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
 
     const onResize = () => {
-      camera.aspect = innerWidth / innerHeight;
-      camera.updateProjectionMatrix();
+      camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     };
     window.addEventListener('resize', onResize);
-    
-    let hidden = false;
-    const onVis = () => { hidden = document.hidden; if (!hidden) animate(); };
-    document.addEventListener('visibilitychange', onVis);
 
     const clock = new THREE.Clock();
+    let raf;
     const animate = () => {
-      if (this._disposed || hidden) return;
-      this._raf = requestAnimationFrame(animate);
-      const dt = Math.min(clock.getDelta(), 0.05);
-      const t = clock.getElapsedTime();
+      if (this._disposed) return;
+      raf = requestAnimationFrame(animate);
+      const dt = clock.getDelta();
       
-      const beat = Math.max(0, Math.sin(t * Math.PI * 2.2)); 
-      for (const ring of rings) {
-        ring.position.z += speed * dt;
-        if (ring.position.z > 34) ring.position.z -= DEPTH;
-        const prox = 1 - Math.min(1, (34 - ring.position.z) / DEPTH);
-        ring.material.opacity = 0.4 + prox * 0.4 + beat * 0.2;
-        ring.rotation.z += dt * 0.3;
-        const s = 1 + beat * 0.1;
-        ring.scale.set(s, s, 1);
-      }
-      const arr = pGeo.attributes.position.array;
-      for (let i = 2; i < arr.length; i += 3) {
-        arr[i] += speed * 2.2 * dt;
-        if (arr[i] > 36) arr[i] -= DEPTH;
-      }
-      pGeo.attributes.position.needsUpdate = true;
-      tube.rotation.y += dt * 0.08;
+      // Vinculamos levemente la rotación de las partículas al scroll!
+      const scrollRatio = window.scrollY / (document.body.scrollHeight - window.innerHeight || 1);
       
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const motionScale = prefersReducedMotion ? 0.2 : 1.0;
+      particles.rotation.y += dt * 0.1 + (scrollRatio * 0.05);
+      particles.rotation.z += dt * 0.05;
 
-      camera.position.x += (Math.sin(t * 0.5) * 2.5 + (mouseX * 18 * motionScale) - camera.position.x) * 0.05;
-      camera.position.y += (Math.cos(t * 0.6) * 1.8 + (-mouseY * 15 * motionScale) - camera.position.y) * 0.05;
-      camera.lookAt(Math.sin(t * 0.5) * 1.5, Math.cos(t * 0.6) * 1.0, -60);
-      
       renderer.render(scene, camera);
     };
     animate();
 
-    this._cleanup = () => {
-      document.removeEventListener('mousemove', onMouse);
+    this._cleanup3D = () => {
       window.removeEventListener('resize', onResize);
-      document.removeEventListener('visibilitychange', onVis);
-      renderer.dispose();
-      ringGeo.dispose();
-      pGeo.dispose();
+      cancelAnimationFrame(raf);
+      renderer.dispose(); geometry.dispose(); material.dispose();
     };
   }
 }
